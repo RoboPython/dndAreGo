@@ -24,7 +24,10 @@ html, body {margin: 0; height: 100%;}
 </style>
 </head>
 <body onload="startGame()">
+<script src="/socket.io/socket.io.js"></script>
 <script>
+var socket = io();
+
 
 
 var theMap = new Map();
@@ -158,12 +161,12 @@ function SpriteLoader(listOfFiles){
 
 
 theSpriteLoader = new SpriteLoader([
-	"waterC.png",
-	"waterD.png",
-	"selector.png",
-	"magnus1.png",
-	"magnusLeft.png",
-	"magnusRight.png"
+	"/images/waterC.png",
+	"/images/waterD.png",
+	"/images/selector.png",
+	"/images/magnus1.png",
+	"/images/magnusLeft.png",
+	"/images/magnusRight.png"
 
 ]);
 theSpriteLoader.load();
@@ -177,8 +180,6 @@ function Tile(width, height, sprite, x, y) {
     this.height = height;
     this.x = x;
     this.y = y;
-	this.selector = new Image()
-	this.selector.src = "selector.png"
 	this.sprite = sprite
 
 
@@ -335,10 +336,11 @@ function Player(x,y,sprite1,sprite2,sprite3) {
 				this.moving = false
 				this.left = !this.left
 				this.frameCounter = 0
-				
 
 			}
 		}
+
+
 
         ctx = myGameArea.context;
 		ctx.drawImage(this.sprite, this.x *(tileSize +tileGap),(this.y-this.offset)*(tileSize+tileGap),tileSize,tileSize);
@@ -373,8 +375,6 @@ window.addEventListener('scroll', function (event) {
 }, false);
 
 
-
-
 function handleMouseMove(e) {
 	state.mouseInfo.mouseX = parseInt(e.clientX - state.mouseInfo.offsetX);
     state.mouseInfo.mouseY = parseInt(e.clientY - state.mouseInfo.offsetY);
@@ -389,6 +389,8 @@ function handleMouseUp(e) {
 	state.selectedPlayer.path = state.selectedPlayer.buildingPath;
 	state.selectedPlayer.buildingPath = [];
 	state.selectedPlayer.destination = state.selectedPlayer.path[0];
+	socket.emit('updatePosition', state.selectedPlayer.path);
+
 }
 
 
@@ -396,6 +398,10 @@ function handleMouseUp(e) {
 function handleMouseClick(e){
 	x = Math.floor((state.mouseInfo.mouseX+state.mouseInfo.scrollX)/(tileSize+tileGap))
 	y = Math.floor((state.mouseInfo.mouseY+state.mouseInfo.scrollY)/(tileSize+tileGap))
+
+
+
+
 }
 
 
@@ -471,11 +477,13 @@ function updateGameArea() {
 
 		state.selectedPlayer = thePlayers[0];
 
-		theSelector = new Selector(5,5,"selector.png");
+		theSelector = new Selector(5,5,"/images/selector.png");
 		theCamera.setTiles(theCamera.generateTiles());
 		setup = true;
 	}
 	if (setup===true){
+
+
 		selectionChecker();
 		pathMaker();
 		if (state.selectedPlayer.moving === false){

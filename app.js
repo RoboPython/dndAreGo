@@ -15,6 +15,7 @@ var io           = socket_io();
 app.io           = io;
 
 var indexRouter = require('./routes/index')(app.io);
+console.log("random")
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -47,9 +48,11 @@ app.use(function(err, req, res, next) {
 
 
 // socket.io events
-io.on( "connection", function( socket )
+app.io.on( "connection", function( socket )
 {
-	console.log( "A user connected" );
+	socket.on('updatePosition', (msg) => {
+		console.log('path:',msg);
+	});
 });
 
 
