@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<style>
+body{
+    background-color: #444444;
+
+}
+
+canvas {
+    background-color: #f1f1f1;
+	margin-left:120px;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+
+}
+
+html, body {margin: 0; height: 100%;}
+
+</style>
+</head>
+<body onload="startGame()">
+<script>
+
+
+var theMap = new Map();
+var tiles = [];
+
+tileSize = 40;
+tileGap = 0
+xRes = theMap.getMaxX()//31
+yRes = theMap.getMaxY()//16
+WIDTH = (tileSize+tileGap)*(xRes)
+HEIGHT = (tileSize+tileGap)*(yRes)
+var state = {
+  pressedKeys: {
+    left: false,
+    right: false,
+    up: false,
+    down: false
+  },
+  mouseInfo:{
+	xOffset:0,
+	yOffset:0,
+	mouseX:0,
+	mouseY:0,
+	mouseDown:false
+  },
+  selectedPlayer:null
+  
+}
+
+
+
+function startGame() {
+    myGameArea.start();
+	myGameArea.context.imageSmoothingEnabled = false;
+	updateGameArea();
+	canvas = $("canvas")
+	canvasOffset = $("#canvas").offset();
+    state.mouseInfo.offsetX = canvasOffset.left;
+    state.mouseInfo.offsetY = canvasOffset.top;
+	canvas.mousemove(handleMouseMove);
+	canvas.click(handleMouseClick);
+	canvas.mousedown(handleMouseDown);
+	canvas.mouseup(handleMouseUp);
+
+}
+
+
+
+var myGameArea = {
+    canvas : document.createElement("canvas"),
+    start : function() {
+        this.canvas.width = WIDTH;
+        this.canvas.height = HEIGHT;
+		this.canvas.setAttribute('id',"canvas")
+        this.context = this.canvas.getContext("2d");
+        document.body.insertBefore(this.canvas, document.body.childNodes[0]);
+        this.frameNo = 0;
+        },
+    clear : function() {
+        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    }
+}
+
+function Map() {
+	this.grid = [
+				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
+				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
+				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]
+				]
+
+
+
+	this.getMaxX = function(x,y){
+		return this.grid[0].length
+	}
+
+	this.getMaxY = function(x,y){
+		return this.grid.length
+	}
+
+	this.getMapTile =function(x,y){
+	  if (y < this.grid.length && x < this.grid[y].length && y >= 0 && x >= 0){
+			return this.grid[y][x]
+		}else{
+			return undefined
+		}
+	}
+}
+
+
+
+function SpriteLoader(listOfFiles){
+	this.sprites = []
+	this.allLoaded = false;
+
+	this.load = function(){
+		for (var i =0;i<listOfFiles.length;i++){
+			sprite = new Image;
+			sprite.src = listOfFiles[i]
+			sprite.onload = function(){
+								sprite.loaded = true;
+							}
+			this.sprites.push(sprite);
+		}
+	}
+
+	this.checkAllLoaded = function (){
+		this.allLoaded = true;
+		for (var i =0;i<this.sprites.length;i++){
+		  if (this.sprites[i].loaded === false){
+			this.loaded = false;
+		  }
+		}
+
+	  return this.allLoaded;
+	  
+	}
+}
+
+
+
+
+
+theSpriteLoader = new SpriteLoader([
+	"waterC.png",
+	"waterD.png",
+	"selector.png",
+	"magnus1.png",
+	"magnusLeft.png",
+	"magnusRight.png"
+
+]);
+theSpriteLoader.load();
+
+
+
+
+
+function Tile(width, height, sprite, x, y) {
+    this.width = width;
+    this.height = height;
+    this.x = x;
+    this.y = y;
+	this.selector = new Image()
+	this.selector.src = "selector.png"
+	this.sprite = sprite
+
+
+	this.draw = function(){
+        ctx = myGameArea.context;
+		ctx.drawImage(this.sprite, this.x, this.y,width=this.width,height=this.height);
+	}
+
+
+    this.update = function() {
+        ctx = myGameArea.context;
+		ctx.drawImage(this.sprite, this.x, this.y,width=this.width,height=this.height);
+
+    }
+}
+
+
+
+function TileContainer(xWidth,yWidth,xOffset,yOffset) {
+	this.xWidth = xWidth
+	this.yWidth = yWidth
+	this.xOffset = xOffset
+	this.yOffset = yOffset
+	this.speed = 0.5
+	this.allLoaded = false;
+
+
+	this.generateTiles = function(){
+		tempTiles = []
+		for (var j=0;j<this.yWidth;j++){
+			for (var i=0;i<this.xWidth;i++){
+				if (i===0 ){
+					tempTiles.push([])
+				}
+				x = i
+				y = j
+
+				mapValue = theMap.getMapTile(i,j)
+				if (mapValue != undefined){
+					sprite = theSpriteLoader.sprites[mapValue]
+				}else{
+					sprite = theSpriteLoader.sprites[4]
+				}
+
+				tile = new Tile(tileSize, tileSize, sprite, (x)*(tileSize+tileGap), (y)*(tileSize + tileGap));
+				tempTiles[j].push(tile);
+			}
+		}
+		return tempTiles
+	}
+
+	this.setTiles = function(){
+		this.tiles = this.generateTiles();
+	}
+
+
+	this.drawTiles = function(){
+		for (var j = 0; j < this.tiles.length; j++) {
+			for (var i = 0; i < this.tiles[j].length; i++) {
+				this.tiles[j][i].draw()
+			}
+		}
+	}
+
+	this.update = function(){
+		this.drawTiles();
+	}
+}
+
+function Selector(x,y,sprite) {
+	this.x = x;
+	this.y = y;
+	this.sprite = new Image();
+	this.sprite.src = sprite;
+
+	this.setPosition = function(x,y){
+		this.x = x
+		this.y = y
+	}
+
+
+    this.update = function(text) {
+        ctx = myGameArea.context;
+		ctx.drawImage(this.sprite, this.x *(tileSize +tileGap),(this.y)*(tileSize+tileGap),tileSize,tileSize);
+		ctx.font = "30px Arial";
+		ctx.fillText(text, this.x*(tileSize+tileGap), (this.y+1)*(tileSize+tileGap)-15);
+
+    }
+	
+}
+
+
+
+
+
+function Player(x,y,sprite1,sprite2,sprite3) {
+	this.x = x;
+	this.y = y;
+	this.sprite = sprite1;
+	this.spriteStill = sprite1;
+	this.moving = false
+	this.maxFrames = 16;
+	this.frameCounter = 0
+	this.direction = [0,0]
+	this.speed = 0.0625
+	this.spriteLeft = sprite2
+	this.spriteRight = sprite3
+	this.left = true;
+	this.offset = 0.3
+	this.destination = [x,y]
+	this.path = []
+	this.buildingPath = [];
+
+
+	this.updatePosition = function(x,y){
+		if (this.moving === false){
+			this.moving = true;
+		}
+		this.direction[0] = x;
+		this.direction[1] = y;
+	}
+
+	this.moveToDestination = function(){
+		if (this.x !== this.destination[0] || this.y !== this.destination[1]){
+			distanceToDestX = this.destination[0]-this.x
+			distanceToDestY = this.destination[1]-this.y
+			directionToDestX = Math.sign(distanceToDestX)
+			directionToDestY = Math.sign(distanceToDestY)
+			this.updatePosition(directionToDestX,directionToDestY);
+		}else{
+			if (this.path.length > 1){
+				this.destination = this.path[1]
+				this.path.shift();
+			}
+		}
+	}
+
+
+    this.update = function(camX,camY) {
+		if (this.moving){
+			if (this.frameCounter !== this.maxFrames){
+				this.x += this.direction[0] * this.speed
+				this.y += this.direction[1] * this.speed
+				this.frameCounter +=1
+				if (this.left){
+					this.sprite = this.spriteLeft
+				}else{
+					this.sprite = this.spriteRight
+				}
+				
+
+			}else{
+				this.sprite =  this.spriteStill;
+				this.moving = false
+				this.left = !this.left
+				this.frameCounter = 0
+				
+
+			}
+		}
+
+        ctx = myGameArea.context;
+		ctx.drawImage(this.sprite, this.x *(tileSize +tileGap),(this.y-this.offset)*(tileSize+tileGap),tileSize,tileSize);
+    }
+	
+}
+
+var keyMap = {
+  39: 'right',
+  37: 'left',
+  38: 'up',
+  40: 'down'
+}
+function keydown(event) {
+  var key = keyMap[event.keyCode]
+  state.pressedKeys[key] = true
+}
+function keyup(event) {
+  var key = keyMap[event.keyCode]
+  state.pressedKeys[key] = false
+}
+
+window.addEventListener("keydown", keydown, false)
+window.addEventListener("keyup", keyup, false)
+
+
+window.addEventListener('scroll', function (event) {
+
+	offsetDiffX = window.pageXoffset //- state.mouseInfo.offsetX
+	offsetDiffY = window.pageYoffset - state.mouseInfo.offsetY
+
+}, false);
+
+
+
+
+function handleMouseMove(e) {
+	state.mouseInfo.mouseX = parseInt(e.clientX - state.mouseInfo.offsetX);
+    state.mouseInfo.mouseY = parseInt(e.clientY - state.mouseInfo.offsetY);
+}
+
+function handleMouseDown(e) {
+	state.mouseInfo.mouseDown = true;
+}
+
+function handleMouseUp(e) {
+	state.mouseInfo.mouseDown = false;
+	state.selectedPlayer.path = state.selectedPlayer.buildingPath;
+	state.selectedPlayer.buildingPath = [];
+	state.selectedPlayer.destination = state.selectedPlayer.path[0];
+}
+
+
+
+function handleMouseClick(e){
+	x = Math.floor((state.mouseInfo.mouseX+state.mouseInfo.scrollX)/(tileSize+tileGap))
+	y = Math.floor((state.mouseInfo.mouseY+state.mouseInfo.scrollY)/(tileSize+tileGap))
+}
+
+
+selectionChecker = function(){
+	highlightX = Math.floor((state.mouseInfo.mouseX+state.mouseInfo.scrollX)/(tileSize+tileGap))
+	highlightY = Math.floor((state.mouseInfo.mouseY+state.mouseInfo.scrollY)/(tileSize+tileGap))
+
+	if (highlightX === -1){
+		highlightX = 0
+	}
+
+
+	theSelector.setPosition(highlightX,highlightY);
+	return [highlightX,highlightY]
+
+}
+
+
+pathMaker = function(){
+	
+	//change the highlight function to have small hitboxes to make diagons possible
+	highlightX = Math.floor((state.mouseInfo.mouseX+state.mouseInfo.scrollX)/(tileSize+tileGap))
+	highlightY = Math.floor((state.mouseInfo.mouseY+state.mouseInfo.scrollY)/(tileSize+tileGap))
+
+	if (highlightX === -1){
+		highlightX = 0
+	}
+
+	  if (state.mouseInfo.mouseDown){
+		  if (state.selectedPlayer.buildingPath.length === 0){
+				state.selectedPlayer.buildingPath.push([highlightX,highlightY])
+		  }else{
+			lastEntry = state.selectedPlayer.buildingPath[state.selectedPlayer.buildingPath.length-1]
+			if (lastEntry[0] !== highlightX || lastEntry[1] !== highlightY){
+				state.selectedPlayer.buildingPath.push([highlightX,highlightY])
+			}
+		  }
+	  }
+}
+
+updateScroll = function(){
+	scrollX = $(window).scrollLeft()
+	scrollY = $(window).scrollTop()
+	state.mouseInfo.scrollX = scrollX;
+	state.mouseInfo.scrollY = scrollY;
+}
+
+//TODO
+/*
+make building path work for diagonals
+make the path only build from the player
+make the distance counter work for diagonals
+*/
+
+
+
+
+setup = false
+function updateGameArea() {
+	window.requestAnimationFrame(updateGameArea);
+	
+
+	updateScroll();
+
+	if (setup === false && theSpriteLoader.checkAllLoaded()){
+		theCamera = new TileContainer(xRes,yRes,0,0);
+
+		magnus = new Player(3,3,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+
+
+		thePlayers = []
+		thePlayers.push(magnus);
+
+		state.selectedPlayer = thePlayers[0];
+
+		theSelector = new Selector(5,5,"selector.png");
+		theCamera.setTiles(theCamera.generateTiles());
+		setup = true;
+	}
+	if (setup===true){
+		selectionChecker();
+		pathMaker();
+		if (state.selectedPlayer.moving === false){
+			state.selectedPlayer.moveToDestination();
+		}
+		theCamera.drawTiles();
+		text = "";
+		if (state.selectedPlayer.buildingPath.length === 0){
+			text = "";
+		}else{
+			text = (state.selectedPlayer.buildingPath.length-1)*5 +"ft"
+		}
+		theSelector.update(text);
+
+		for (var i =0;i<thePlayers.length;i++){
+			thePlayers[i].update()
+		}
+	}
+}
+
+</script>
+</body>
+</html>
+
