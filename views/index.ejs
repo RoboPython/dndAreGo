@@ -59,6 +59,7 @@ var state = {
 
 
 
+
 function startGame() {
     myGameArea.start();
 	myGameArea.context.imageSmoothingEnabled = false;
@@ -398,11 +399,15 @@ function handleMouseUp(e) {
 function handleMouseClick(e){
 	x = Math.floor((state.mouseInfo.mouseX+state.mouseInfo.scrollX)/(tileSize+tileGap))
 	y = Math.floor((state.mouseInfo.mouseY+state.mouseInfo.scrollY)/(tileSize+tileGap))
-
-
-
-
 }
+
+
+socket.on('newPath', function(incoming){
+      state.selectedPlayer.path = incoming.path
+	  console.log("oooooh look");
+	  console.log(state.selectedPlayer.path);
+});
+
 
 
 selectionChecker = function(){

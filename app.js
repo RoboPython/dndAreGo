@@ -50,9 +50,12 @@ app.use(function(err, req, res, next) {
 // socket.io events
 app.io.on( "connection", function( socket )
 {
-	socket.on('updatePosition', (msg) => {
-		console.log('path:',msg);
+	console.log("new player joined")
+	socket.on('updatePosition', (path) => {
+		console.log('path:',path);
+		io.emit('newPath',{'path':path})
 	});
+
 });
 
 
