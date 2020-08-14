@@ -14,8 +14,11 @@ var app = express();
 var io           = socket_io();
 app.io           = io;
 
+var gameState = {}
+
+
+
 var indexRouter = require('./routes/index')(app.io);
-console.log("random")
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -48,9 +51,12 @@ app.use(function(err, req, res, next) {
 
 
 // socket.io events
+counter = 0
 app.io.on( "connection", function( socket )
 {
-	console.log("new player joined")
+	gameState[counter] = "player"+counter
+	console.log(gameState);
+	counter +=1
 	socket.on('updatePosition', (path) => {
 		console.log('path:',path);
 		io.emit('newPath',{'path':path})

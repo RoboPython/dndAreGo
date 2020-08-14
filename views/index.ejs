@@ -69,7 +69,7 @@ function startGame() {
     state.mouseInfo.offsetX = canvasOffset.left;
     state.mouseInfo.offsetY = canvasOffset.top;
 	canvas.mousemove(handleMouseMove);
-	canvas.click(handleMouseClick);
+	//canvas.click(handleMouseClick);
 	canvas.mousedown(handleMouseDown);
 	canvas.mouseup(handleMouseUp);
 
@@ -382,7 +382,12 @@ function handleMouseMove(e) {
 }
 
 function handleMouseDown(e) {
+	result = playerInSquare(theSelector.x,theSelector.y);
+	if (result[0] === true){
+		state.selectedPlayer = result[1][0];
+	}
 	state.mouseInfo.mouseDown = true;
+
 }
 
 function handleMouseUp(e) {
@@ -395,17 +400,38 @@ function handleMouseUp(e) {
 }
 
 
+//returns [true/false,[players in square]]
+function playerInSquare(x,y){
+	playersInSquare = []
+	isPlayer = false;
+	for (var i =0;i<thePlayers.length;i++){
+		if(thePlayers[i].x === x && thePlayers[i].y === y){
+			isPlayer = true;
+			playersInSquare.push(thePlayers[i])
+		}
+	}
+
+	return [isPlayer,playersInSquare]
+
+}
+
+
+
+
 
 function handleMouseClick(e){
-	x = Math.floor((state.mouseInfo.mouseX+state.mouseInfo.scrollX)/(tileSize+tileGap))
-	y = Math.floor((state.mouseInfo.mouseY+state.mouseInfo.scrollY)/(tileSize+tileGap))
+	/*
+	state.mouseInfo.mouseDown = false;
+	state.selectedPlayer.path = state.selectedPlayer.buildingPath;
+	state.selectedPlayer.buildingPath = [];
+	state.selectedPlayer.destination = state.selectedPlayer.path[0];
+	socket.emit('updatePosition', state.selectedPlayer.path);
+	*/
 }
 
 
 socket.on('newPath', function(incoming){
       state.selectedPlayer.path = incoming.path
-	  console.log("oooooh look");
-	  console.log(state.selectedPlayer.path);
 });
 
 
@@ -454,16 +480,6 @@ updateScroll = function(){
 	state.mouseInfo.scrollY = scrollY;
 }
 
-//TODO
-/*
-make building path work for diagonals
-make the path only build from the player
-make the distance counter work for diagonals
-*/
-
-
-
-
 setup = false
 function updateGameArea() {
 	window.requestAnimationFrame(updateGameArea);
@@ -474,11 +490,17 @@ function updateGameArea() {
 	if (setup === false && theSpriteLoader.checkAllLoaded()){
 		theCamera = new TileContainer(xRes,yRes,0,0);
 
-		magnus = new Player(3,3,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+		magnus1 = new Player(1,0,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+		magnus2 = new Player(2,0,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+		magnus3 = new Player(3,0,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
 
 
 		thePlayers = []
-		thePlayers.push(magnus);
+		thePlayers.push(magnus1);
+		thePlayers.push(magnus2);
+		thePlayers.push(magnus3);
+
+
 
 		state.selectedPlayer = thePlayers[0];
 
