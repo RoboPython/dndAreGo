@@ -57,9 +57,10 @@ app.io.on( "connection", function( socket )
 	gameState[counter] = "player"+counter
 	console.log(gameState);
 	counter +=1
-	socket.on('updatePosition', (path) => {
+	socket.on('updatePosition', (path,playerId) => {
 		console.log('path:',path);
-		io.emit('newPath',{'path':path})
+		console.log('playerID:',playerId);
+		io.emit('newPath',{'path':path,"playerId":playerId})
 	});
 
 });

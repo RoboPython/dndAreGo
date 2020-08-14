@@ -54,7 +54,6 @@ var state = {
 	mouseDown:false
   },
   selectedPlayer:null
-  
 }
 
 
@@ -69,7 +68,7 @@ function startGame() {
     state.mouseInfo.offsetX = canvasOffset.left;
     state.mouseInfo.offsetY = canvasOffset.top;
 	canvas.mousemove(handleMouseMove);
-	//canvas.click(handleMouseClick);
+	canvas.click(handleMouseClick);
 	canvas.mousedown(handleMouseDown);
 	canvas.mouseup(handleMouseUp);
 
@@ -262,7 +261,7 @@ function Selector(x,y,sprite) {
 	}
 
 
-    this.update = function(text) {
+    this.update = function(text="") {
         ctx = myGameArea.context;
 		ctx.drawImage(this.sprite, this.x *(tileSize +tileGap),(this.y)*(tileSize+tileGap),tileSize,tileSize);
 		ctx.font = "30px Arial";
@@ -273,10 +272,8 @@ function Selector(x,y,sprite) {
 }
 
 
-
-
-
-function Player(x,y,sprite1,sprite2,sprite3) {
+function Player(id,x,y,sprite1,sprite2,sprite3) {
+	this.id = id;
 	this.x = x;
 	this.y = y;
 	this.sprite = sprite1;
@@ -349,16 +346,47 @@ function Player(x,y,sprite1,sprite2,sprite3) {
 	
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var keyMap = {
   39: 'right',
   37: 'left',
   38: 'up',
   40: 'down'
 }
+
+
 function keydown(event) {
   var key = keyMap[event.keyCode]
   state.pressedKeys[key] = true
 }
+
+
 function keyup(event) {
   var key = keyMap[event.keyCode]
   state.pressedKeys[key] = false
@@ -382,56 +410,49 @@ function handleMouseMove(e) {
 }
 
 function handleMouseDown(e) {
+
 	result = playerInSquare(theSelector.x,theSelector.y);
 	if (result[0] === true){
 		state.selectedPlayer = result[1][0];
 	}
+
 	state.mouseInfo.mouseDown = true;
+
 
 }
 
 function handleMouseUp(e) {
 	state.mouseInfo.mouseDown = false;
-	state.selectedPlayer.path = state.selectedPlayer.buildingPath;
-	state.selectedPlayer.buildingPath = [];
-	state.selectedPlayer.destination = state.selectedPlayer.path[0];
-	socket.emit('updatePosition', state.selectedPlayer.path);
-
+	thePlayers[state.selectedPlayer].path = thePlayers[state.selectedPlayer].buildingPath;
+	thePlayers[state.selectedPlayer].buildingPath = [];
+	thePlayers[state.selectedPlayer].destination = thePlayers[state.selectedPlayer].path[0];
+	console.log(state.selectedPlayer)
+	socket.emit('updatePosition', thePlayers[state.selectedPlayer].path,state.selectedPlayer);
 }
 
 
-//returns [true/false,[players in square]]
 function playerInSquare(x,y){
-	playersInSquare = []
+	peeps = []
 	isPlayer = false;
-	for (var i =0;i<thePlayers.length;i++){
-		if(thePlayers[i].x === x && thePlayers[i].y === y){
+	for (var key in thePlayers){
+		if(thePlayers[key].x === x && thePlayers[key].y === y){
 			isPlayer = true;
-			playersInSquare.push(thePlayers[i])
+			peeps.push(key)
 		}
 	}
 
-	return [isPlayer,playersInSquare]
-
+	return [isPlayer,peeps]
 }
-
-
 
 
 
 function handleMouseClick(e){
-	/*
-	state.mouseInfo.mouseDown = false;
-	state.selectedPlayer.path = state.selectedPlayer.buildingPath;
-	state.selectedPlayer.buildingPath = [];
-	state.selectedPlayer.destination = state.selectedPlayer.path[0];
-	socket.emit('updatePosition', state.selectedPlayer.path);
-	*/
+	console.log("click")
 }
 
 
 socket.on('newPath', function(incoming){
-      state.selectedPlayer.path = incoming.path
+      thePlayers[incoming.playerId].path = incoming.path
 });
 
 
@@ -451,6 +472,8 @@ selectionChecker = function(){
 }
 
 
+
+
 pathMaker = function(){
 	
 	//change the highlight function to have small hitboxes to make diagons possible
@@ -462,12 +485,12 @@ pathMaker = function(){
 	}
 
 	  if (state.mouseInfo.mouseDown){
-		  if (state.selectedPlayer.buildingPath.length === 0){
-				state.selectedPlayer.buildingPath.push([highlightX,highlightY])
+		  if (thePlayers[state.selectedPlayer].buildingPath.length === 0){
+				thePlayers[state.selectedPlayer].buildingPath.push([highlightX,highlightY])
 		  }else{
-			lastEntry = state.selectedPlayer.buildingPath[state.selectedPlayer.buildingPath.length-1]
+			lastEntry = thePlayers[state.selectedPlayer].buildingPath[thePlayers[state.selectedPlayer].buildingPath.length-1]
 			if (lastEntry[0] !== highlightX || lastEntry[1] !== highlightY){
-				state.selectedPlayer.buildingPath.push([highlightX,highlightY])
+				thePlayers[state.selectedPlayer].buildingPath.push([highlightX,highlightY])
 			}
 		  }
 	  }
@@ -490,19 +513,13 @@ function updateGameArea() {
 	if (setup === false && theSpriteLoader.checkAllLoaded()){
 		theCamera = new TileContainer(xRes,yRes,0,0);
 
-		magnus1 = new Player(1,0,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
-		magnus2 = new Player(2,0,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
-		magnus3 = new Player(3,0,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+		thePlayers = {}
+		for (var i =0;i<6;i++){
+			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+			thePlayers[player.id] = player;
+		}
 
-
-		thePlayers = []
-		thePlayers.push(magnus1);
-		thePlayers.push(magnus2);
-		thePlayers.push(magnus3);
-
-
-
-		state.selectedPlayer = thePlayers[0];
+		state.selectedPlayer = "p1";
 
 		theSelector = new Selector(5,5,"/images/selector.png");
 		theCamera.setTiles(theCamera.generateTiles());
@@ -513,21 +530,24 @@ function updateGameArea() {
 
 		selectionChecker();
 		pathMaker();
-		if (state.selectedPlayer.moving === false){
-			state.selectedPlayer.moveToDestination();
+
+		console.log(state.selectedPlayer)
+		if (thePlayers[state.selectedPlayer].moving === false){
+			thePlayers[state.selectedPlayer].moveToDestination();
 		}
 		theCamera.drawTiles();
-		text = "";
-		if (state.selectedPlayer.buildingPath.length === 0){
-			text = "";
-		}else{
-			text = (state.selectedPlayer.buildingPath.length-1)*5 +"ft"
-		}
-		theSelector.update(text);
+		theSelector.update();
 
-		for (var i =0;i<thePlayers.length;i++){
-			thePlayers[i].update()
+		for (var key in thePlayers){
+			thePlayers[key].update()
+			if(thePlayers[key].moving === false){
+				thePlayers[key].moveToDestination();
+			}
 		}
+
+
+
+
 	}
 }
 
