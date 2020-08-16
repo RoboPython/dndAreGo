@@ -494,6 +494,9 @@ socket.on('newPath', function(incoming){
 
 socket.on('join', function(incoming){
 	document.getElementById("canvas").style.display = "";
+	canvasOffset = $("#canvas").offset();
+    state.mouseInfo.offsetX = canvasOffset.left;
+    state.mouseInfo.offsetY = canvasOffset.top;
 	state.join = true;
 });
 
