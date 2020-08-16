@@ -51,7 +51,7 @@ app.use(function(err, req, res, next) {
 
 
 // socket.io events
-rooms = {};
+rooms = [];
 
 app.io.on( "connection", function( socket )
 {

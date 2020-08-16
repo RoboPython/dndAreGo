@@ -61,7 +61,8 @@ var state = {
 	mouseY:0,
 	mouseDown:false
   },
-  selectedPlayer:null
+  selectedPlayer:null,
+  join:false
 }
 
 
@@ -91,6 +92,8 @@ var myGameArea = {
         this.canvas.height = HEIGHT;
 		this.canvas.setAttribute('id',"canvas")
         this.context = this.canvas.getContext("2d");
+		this.canvas.style.display = "none";
+
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
         },
@@ -491,7 +494,8 @@ socket.on('newPath', function(incoming){
 });
 
 socket.on('join', function(incoming){
-
+	document.getElementById("canvas").style.display = "";
+	state.join = true;
 });
 
 
@@ -567,7 +571,7 @@ function updateGameArea() {
 		theCamera.setTiles(theCamera.generateTiles());
 		setup = true;
 	}
-	if (setup===true){
+	if (setup===true && state.join === true){
 
 
 		selectionChecker();
