@@ -30,7 +30,7 @@ html, body {margin: 0; height: 100%;}
 <button type="submit" onclick="createRoom()">create room</button>
 <p id="roomCodeDisplay"></p>
 
-<canvas id="canvas">
+<canvas id="canvas" style="display:none">
 
 <script src="/socket.io/socket.io.js"></script>
 <script>
@@ -92,7 +92,6 @@ var myGameArea = {
         this.canvas.height = HEIGHT;
 		this.canvas.setAttribute('id',"canvas")
         this.context = this.canvas.getContext("2d");
-		this.canvas.style.display = "none";
 
         document.body.insertBefore(this.canvas, document.body.childNodes[0]);
         this.frameNo = 0;
