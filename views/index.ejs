@@ -25,9 +25,11 @@ html, body {margin: 0; height: 100%;}
 </head>
 <body onload="startGame()">
 
-<input type="text" id="roomNumber" name="roomNumber" placeholder="0000"><br><br>
-<button type="submit" onclick="joinRoom()">join room</button>
-<button type="submit" onclick="createRoom()">create room</button>
+<div id= "joiningControls">
+	<input type="text" id="roomNumber" name="roomNumber" placeholder="0000"><br><br>
+	<button type="submit" onclick="joinRoom()">join room</button>
+	<button type="submit" onclick="createRoom()">create room</button>
+</div>
 <p id="roomCodeDisplay"></p>
 
 <canvas id="canvas" style="display:none">
@@ -493,6 +495,7 @@ socket.on('newPath', function(incoming){
 });
 
 socket.on('join', function(incoming){
+	document.getElementById("joiningControls").style.display = "none";
 	document.getElementById("canvas").style.display = "";
 	canvasOffset = $("#canvas").offset();
     state.mouseInfo.offsetX = canvasOffset.left;
