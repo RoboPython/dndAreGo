@@ -188,12 +188,12 @@ theSpriteLoader = new SpriteLoader([
 	"/images/eadwynn1.png",
 	"/images/eadwynnLeft.png",
 	"/images/eadwynnRight.png",
-	"/images/meera1.png",
-	"/images/meeraLeft.png",
-	"/images/meeraRight.png",
-	"/images/diega1.png",
-	"/images/diegaLeft.png",
-	"/images/diegaRight.png"
+	"/images/luciana1.png",
+	"/images/lucianaLeft.png",
+	"/images/lucianaRight.png",
+	"/images/miguel1.png",
+	"/images/miguelLeft.png",
+	"/images/miguelRight.png"
 
 ]);
 theSpriteLoader.load();
@@ -582,7 +582,6 @@ function updateGameArea() {
 		selectionChecker();
 		pathMaker();
 
-		console.log(state.selectedPlayer)
 		if (thePlayers[state.selectedPlayer].moving === false){
 			thePlayers[state.selectedPlayer].moveToDestination();
 		}
