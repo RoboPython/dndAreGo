@@ -24,6 +24,14 @@ html, body {margin: 0; height: 100%;}
 </style>
 </head>
 <body onload="startGame()">
+
+<input type="text" id="roomNumber" name="roomNumber" placeholder="0000"><br><br>
+<button type="submit" onclick="joinRoom()">join room</button>
+<button type="submit" onclick="createRoom()">create room</button>
+<p id="roomCodeDisplay"></p>
+
+<canvas id="canvas">
+
 <script src="/socket.io/socket.io.js"></script>
 <script>
 var socket = io();
@@ -77,7 +85,7 @@ function startGame() {
 
 
 var myGameArea = {
-    canvas : document.createElement("canvas"),
+    canvas : document.getElementById("canvas"),
     start : function() {
         this.canvas.width = WIDTH;
         this.canvas.height = HEIGHT;
@@ -166,7 +174,22 @@ theSpriteLoader = new SpriteLoader([
 	"/images/selector.png",
 	"/images/magnus1.png",
 	"/images/magnusLeft.png",
-	"/images/magnusRight.png"
+	"/images/magnusRight.png",
+	"/images/meera1.png",
+	"/images/meeraLeft.png",
+	"/images/meeraRight.png",
+	"/images/diega1.png",
+	"/images/diegaLeft.png",
+	"/images/diegaRight.png",
+	"/images/eadwynn1.png",
+	"/images/eadwynnLeft.png",
+	"/images/eadwynnRight.png",
+	"/images/meera1.png",
+	"/images/meeraLeft.png",
+	"/images/meeraRight.png",
+	"/images/diega1.png",
+	"/images/diegaLeft.png",
+	"/images/diegaRight.png"
 
 ]);
 theSpriteLoader.load();
@@ -369,10 +392,6 @@ function Player(id,x,y,sprite1,sprite2,sprite3) {
 
 
 
-
-
-
-
 var keyMap = {
   39: 'right',
   37: 'left',
@@ -426,7 +445,6 @@ function handleMouseUp(e) {
 	thePlayers[state.selectedPlayer].path = thePlayers[state.selectedPlayer].buildingPath;
 	thePlayers[state.selectedPlayer].buildingPath = [];
 	thePlayers[state.selectedPlayer].destination = thePlayers[state.selectedPlayer].path[0];
-	console.log(state.selectedPlayer)
 	socket.emit('updatePosition', thePlayers[state.selectedPlayer].path,state.selectedPlayer);
 }
 
@@ -451,9 +469,31 @@ function handleMouseClick(e){
 }
 
 
+joinRoom = function(){
+	roomNumber = document.getElementById("roomNumber").value
+	socket.emit('joinRoom', roomNumber);
+
+}
+
+createRoom = function(){
+	console.log("createRoom")
+	socket.emit('createRoom');
+}
+
+
+socket.on('roomCode', function(incoming){
+	document.getElementById("roomCodeDisplay").innerHTML = "Room code is: " +incoming.roomCode
+
+});
+
 socket.on('newPath', function(incoming){
       thePlayers[incoming.playerId].path = incoming.path
 });
+
+socket.on('join', function(incoming){
+
+});
+
 
 
 
@@ -516,6 +556,8 @@ function updateGameArea() {
 		thePlayers = {}
 		for (var i =0;i<6;i++){
 			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3*(i+1)],theSpriteLoader.sprites[3*(i+1)+1],theSpriteLoader.sprites[3*(i+1)+2]);
+
 			thePlayers[player.id] = player;
 		}
 

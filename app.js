@@ -14,7 +14,6 @@ var app = express();
 var io           = socket_io();
 app.io           = io;
 
-var gameState = {}
 
 
 
@@ -50,17 +49,36 @@ app.use(function(err, req, res, next) {
 
 
 
+
 // socket.io events
-counter = 0
+rooms = {};
+
 app.io.on( "connection", function( socket )
 {
-	gameState[counter] = "player"+counter
-	console.log(gameState);
-	counter +=1
+	var roomCode = 0;
+
+	socket.on('createRoom', () => {
+		randomCode = Math.floor(Math.random() * 1000) + 1;
+		socket.leave('waitingRoom');
+		socket.emit('roomCode',{'roomCode':randomCode})
+		socket.join(randomCode,function(){
+			io.to(randomCode).emit('join',{'positions':{"a":"yoghurt"}})
+		})
+		roomCode = randomCode;
+
+	});
+
+	socket.on('joinRoom', (value) => {
+		roomCode = value
+		socket.join(roomCode, function(){
+			io.to(roomCode).emit('join',{'positions':{"a":"yoghurt"}})
+		});
+
+	})
+
+
 	socket.on('updatePosition', (path,playerId) => {
-		console.log('path:',path);
-		console.log('playerID:',playerId);
-		io.emit('newPath',{'path':path,"playerId":playerId})
+		io.to(roomCode).emit('newPath',{'path':path,"playerId":playerId})
 	});
 
 });
