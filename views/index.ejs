@@ -434,9 +434,12 @@ function handleMouseMove(e) {
 
 function handleMouseDown(e) {
 
+	
 	result = playerInSquare(theSelector.x,theSelector.y);
 	if (result[0] === true){
 		state.selectedPlayer = result[1][0];
+	}else{
+		state.selectedPlayer = null;
 	}
 
 	state.mouseInfo.mouseDown = true;
@@ -445,11 +448,14 @@ function handleMouseDown(e) {
 }
 
 function handleMouseUp(e) {
+	console.log("up")
 	state.mouseInfo.mouseDown = false;
-	thePlayers[state.selectedPlayer].path = thePlayers[state.selectedPlayer].buildingPath;
-	thePlayers[state.selectedPlayer].buildingPath = [];
-	thePlayers[state.selectedPlayer].destination = thePlayers[state.selectedPlayer].path[0];
-	socket.emit('updatePosition', thePlayers[state.selectedPlayer].path,state.selectedPlayer);
+	if (state.selectedPlayer !== null){
+		thePlayers[state.selectedPlayer].path = thePlayers[state.selectedPlayer].buildingPath;
+		thePlayers[state.selectedPlayer].buildingPath = [];
+		thePlayers[state.selectedPlayer].destination = thePlayers[state.selectedPlayer].path[0];
+		socket.emit('updatePosition', thePlayers[state.selectedPlayer].path,state.selectedPlayer);
+	}
 }
 
 
@@ -480,7 +486,6 @@ joinRoom = function(){
 }
 
 createRoom = function(){
-	console.log("createRoom")
 	socket.emit('createRoom');
 }
 
@@ -533,7 +538,7 @@ pathMaker = function(){
 		highlightX = 0
 	}
 
-	  if (state.mouseInfo.mouseDown){
+	  if (state.mouseInfo.mouseDown && state.selectedPlayer !== null){
 		  if (thePlayers[state.selectedPlayer].buildingPath.length === 0){
 				thePlayers[state.selectedPlayer].buildingPath.push([highlightX,highlightY])
 		  }else{
@@ -570,7 +575,7 @@ function updateGameArea() {
 			thePlayers[player.id] = player;
 		}
 
-		state.selectedPlayer = "p1";
+		state.selectedPlayer = null;
 
 		theSelector = new Selector(5,5,"/images/selector.png");
 		theCamera.setTiles(theCamera.generateTiles());
@@ -581,9 +586,11 @@ function updateGameArea() {
 
 		selectionChecker();
 		pathMaker();
-
-		if (thePlayers[state.selectedPlayer].moving === false){
-			thePlayers[state.selectedPlayer].moveToDestination();
+		
+		if (state.selectedPlayer !== null){
+			if (thePlayers[state.selectedPlayer].moving === false){
+				thePlayers[state.selectedPlayer].moveToDestination();
+			}
 		}
 		theCamera.drawTiles();
 		theSelector.update();
