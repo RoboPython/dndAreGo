@@ -193,7 +193,11 @@ theSpriteLoader = new SpriteLoader([
 	"/images/lucianaRight.png",
 	"/images/miguel1.png",
 	"/images/miguelLeft.png",
-	"/images/miguelRight.png"
+	"/images/miguelRight.png",
+	"/images/selector.png",
+	"/images/selector.png",
+	"/images/selector.png"
+
 
 ]);
 theSpriteLoader.load();
@@ -581,7 +585,7 @@ function updateGameArea() {
 		theCamera = new TileContainer(xRes,yRes,0,0);
 
 		thePlayers = {}
-		for (var i =0;i<6;i++){
+		for (var i =0;i<7;i++){
 			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
 			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3*(i+1)],theSpriteLoader.sprites[3*(i+1)+1],theSpriteLoader.sprites[3*(i+1)+2]);
 
