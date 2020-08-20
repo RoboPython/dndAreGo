@@ -47,11 +47,17 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+function Room(name) {
+	this.name = name
+	this.positions = {}
+}
+
+
 
 
 
 // socket.io events
-rooms = [];
+rooms = {};
 
 app.io.on( "connection", function( socket )
 {
@@ -59,25 +65,42 @@ app.io.on( "connection", function( socket )
 
 	socket.on('createRoom', () => {
 		randomCode = Math.floor(Math.random() * 1000) + 1;
+		roomCode = randomCode;
+		//rooms[roomCode] = {"id":{"x":10,"y":11}}
+		rooms[roomCode] = {}
+
+		console.log(rooms);
 		socket.leave('waitingRoom');
 		socket.emit('roomCode',{'roomCode':randomCode})
 		socket.join(randomCode,function(){
-			io.to(randomCode).emit('join',{'positions':{"a":"yoghurt"}})
+			io.to(randomCode).emit('join',{})
 		})
-		roomCode = randomCode;
 
 	});
 
 	socket.on('joinRoom', (value) => {
 		roomCode = value
 		socket.join(roomCode, function(){
-			io.to(roomCode).emit('join',{'positions':{"a":"yoghurt"}})
+			io.to(roomCode).emit('join',rooms[roomCode])
 		});
 
 	})
 
 
 	socket.on('updatePosition', (path,playerId) => {
+				
+		x = path[path.length-1][0]
+		y = path[path.length-1][1]
+		
+		if (playerId in rooms[roomCode]){
+			rooms[roomCode][playerId]["x"] = x
+			rooms[roomCode][playerId]["y"] = y
+		}else{
+			rooms[roomCode][playerId] = {}
+			rooms[roomCode][playerId]["x"] = x
+			rooms[roomCode][playerId]["y"] = y
+		}
+		console.log(rooms);
 		io.to(roomCode).emit('newPath',{'path':path,"playerId":playerId})
 	});
 

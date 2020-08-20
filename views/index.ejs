@@ -500,6 +500,19 @@ socket.on('newPath', function(incoming){
 });
 
 socket.on('join', function(incoming){
+	console.log("incoming",incoming)
+	console.log("thePlayers",thePlayers)
+	for (var key in incoming){
+		thePlayers[key].x = incoming[key].x
+		thePlayers[key].y = incoming[key].y
+		thePlayers[key].destination[0] = incoming[key].x
+		thePlayers[key].destination[1] = incoming[key].y
+
+
+	}
+
+
+
 	document.getElementById("joiningControls").style.display = "none";
 	document.getElementById("canvas").style.display = "";
 	canvasOffset = $("#canvas").offset();
