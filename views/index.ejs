@@ -546,8 +546,6 @@ socket.on('newPath', function(incoming){
 });
 
 socket.on('join', function(incoming){
-	console.log("incoming",incoming)
-	console.log("thePlayers",thePlayers)
 	for (var key in incoming){
 		if (key in thePlayers){
 			thePlayers[key].x = incoming[key].x
@@ -667,7 +665,7 @@ function updateGameArea() {
 		}
 		theCamera.drawTiles();
 		theSelector.update();
-
+		
 		for (var key in thePlayers){
 			thePlayers[key].update()
 			if(thePlayers[key].moving === false){

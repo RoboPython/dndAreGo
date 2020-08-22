@@ -81,7 +81,7 @@ app.io.on( "connection", function( socket )
 	socket.on('joinRoom', (value) => {
 		roomCode = value
 		socket.join(roomCode, function(){
-			io.to(roomCode).emit('join',rooms[roomCode])
+			socket.emit('join',rooms[roomCode])
 		});
 
 	})
