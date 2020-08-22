@@ -86,6 +86,17 @@ app.io.on( "connection", function( socket )
 
 	})
 
+	socket.on('addSprite', (value) => {
+		io.to(roomCode).emit('addSprite',{})
+	})
+
+	socket.on('removeSprite', (playerId) => {
+		delete rooms[roomCode][playerId]
+		io.to(roomCode).emit('removeSprite',{"playerId":playerId})
+	})
+
+
+
 
 	socket.on('updatePosition', (path,playerId) => {
 				

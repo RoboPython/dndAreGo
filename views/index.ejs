@@ -31,6 +31,11 @@ html, body {margin: 0; height: 100%;}
 	<button type="submit" onclick="createRoom()">create room</button>
 </div>
 <p id="roomCodeDisplay"></p>
+<div id= "spriteControls" style="display:none;">
+	<button type="submit" onclick="sendRemoveSprite()">Remove Sprite</button>
+	<button type="submit" onclick="sendAddSprite()">Add Sprite</button>
+</div>
+
 
 <canvas id="canvas" style="display:none">
 
@@ -79,7 +84,6 @@ function startGame() {
     state.mouseInfo.offsetX = canvasOffset.left;
     state.mouseInfo.offsetY = canvasOffset.top;
 	canvas.mousemove(handleMouseMove);
-	canvas.click(handleMouseClick);
 	canvas.mousedown(handleMouseDown);
 	canvas.mouseup(handleMouseUp);
 
@@ -477,17 +481,55 @@ function playerInSquare(x,y){
 }
 
 
-
-function handleMouseClick(e){
-	console.log("click")
-}
-
-
 joinRoom = function(){
 	roomNumber = document.getElementById("roomNumber").value
 	socket.emit('joinRoom', roomNumber);
 
 }
+
+sendAddSprite = function(){
+	spriteImg = "placeholder";
+	socket.emit('addSprite', spriteImg);
+	console.log("sendAddSprite")
+}
+
+sendRemoveSprite = function(){
+	socket.emit('removeSprite', state.selectedPlayer);
+	console.log("sendRemoveSprite")
+}
+
+function* infinite() {
+    let index = 0;
+
+    while (true) {
+        yield index++;
+    }
+}
+
+const generator = infinite();
+
+
+
+socket.on('addSprite', function(incoming){
+	console.log("i recieved to remove new sprite")
+	player = new Player("new"+generator.next().value,10,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+	thePlayers[player.id] = player;
+});
+
+socket.on('removeSprite', function(incoming){
+	console.log("i recieved to remove new sprite")
+	console.log(thePlayers);
+	delete thePlayers[incoming.playerId]
+	state.selectedPlayer = null;
+	console.log(thePlayers);
+});
+
+
+
+
+
+
+
 
 createRoom = function(){
 	socket.emit('createRoom');
@@ -507,10 +549,19 @@ socket.on('join', function(incoming){
 	console.log("incoming",incoming)
 	console.log("thePlayers",thePlayers)
 	for (var key in incoming){
-		thePlayers[key].x = incoming[key].x
-		thePlayers[key].y = incoming[key].y
-		thePlayers[key].destination[0] = incoming[key].x
-		thePlayers[key].destination[1] = incoming[key].y
+		if (key in thePlayers){
+			thePlayers[key].x = incoming[key].x
+			thePlayers[key].y = incoming[key].y
+			thePlayers[key].destination[0] = incoming[key].x
+			thePlayers[key].destination[1] = incoming[key].y
+		}else{
+			player = new Player(key,10,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+			thePlayers[player.id] = player;
+			thePlayers[key].x = incoming[key].x
+			thePlayers[key].y = incoming[key].y
+			thePlayers[key].destination[0] = incoming[key].x
+			thePlayers[key].destination[1] = incoming[key].y
+		}
 
 
 	}
@@ -518,6 +569,8 @@ socket.on('join', function(incoming){
 
 
 	document.getElementById("joiningControls").style.display = "none";
+	document.getElementById("spriteControls").style.display = "";
+
 	document.getElementById("canvas").style.display = "";
 	canvasOffset = $("#canvas").offset();
     state.mouseInfo.offsetX = canvasOffset.left;
@@ -585,12 +638,15 @@ function updateGameArea() {
 		theCamera = new TileContainer(xRes,yRes,0,0);
 
 		thePlayers = {}
-		for (var i =0;i<7;i++){
-			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+		for (var i =0;i<6;i++){
 			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3*(i+1)],theSpriteLoader.sprites[3*(i+1)+1],theSpriteLoader.sprites[3*(i+1)+2]);
-
 			thePlayers[player.id] = player;
 		}
+
+		thePlayers["jointSelector"] = new Player("jointSelector",0,0,theSpriteLoader.sprites[2],theSpriteLoader.sprites[2],theSpriteLoader.sprites[2]);
+		thePlayers["jointSelector"].offset = 0;
+
+
 
 		state.selectedPlayer = null;
 
@@ -600,7 +656,7 @@ function updateGameArea() {
 	}
 	if (setup===true && state.join === true){
 
-
+		console.log(state.selectedPlayer)
 		selectionChecker();
 		pathMaker();
 		
