@@ -34,7 +34,17 @@ html, body {margin: 0; height: 100%;}
 <div id= "spriteControls" style="display:none;">
 	<button type="submit" onclick="sendRemoveSprite()">Remove Sprite</button>
 	<button type="submit" onclick="sendAddSprite()">Add Sprite</button>
+	<select id="ddlViewBy">
+	  <option value="diega">diega</option>
+	  <option value="magnus" selected="selected">magnus</option>
+	  <option value="meera">meera</option>
+	  <option value="luciana">luciana</option>
+	  <option value="eadwynn">eadwynn</option>
+	  <option value="miguel">miguel</option>
+
+	</select>
 </div>
+
 
 
 <canvas id="canvas" style="display:none">
@@ -109,18 +119,18 @@ var myGameArea = {
 
 function Map() {
 	this.grid = [
-				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1],
-				[0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0],
-				[1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1]
+				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
+				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
+				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
+				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
+				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
+				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
+				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
+				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
+				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
+				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
+				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
+				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"]
 				]
 
 
@@ -152,17 +162,19 @@ function SpriteLoader(listOfFiles){
 		for (var i =0;i<listOfFiles.length;i++){
 			sprite = new Image;
 			sprite.src = listOfFiles[i]
+			spriteName = (sprite.src).split("/")[4].split(".")[0]
+			
 			sprite.onload = function(){
 								sprite.loaded = true;
 							}
-			this.sprites.push(sprite);
+			this.sprites[spriteName] = sprite;
 		}
 	}
 
 	this.checkAllLoaded = function (){
 		this.allLoaded = true;
-		for (var i =0;i<this.sprites.length;i++){
-		  if (this.sprites[i].loaded === false){
+		for (key in this.sprites){
+		  if (this.sprites[key].loaded === false){
 			this.loaded = false;
 		  }
 		}
@@ -171,8 +183,6 @@ function SpriteLoader(listOfFiles){
 	  
 	}
 }
-
-
 
 
 
@@ -197,11 +207,7 @@ theSpriteLoader = new SpriteLoader([
 	"/images/lucianaRight.png",
 	"/images/miguel1.png",
 	"/images/miguelLeft.png",
-	"/images/miguelRight.png",
-	"/images/selector.png",
-	"/images/selector.png",
-	"/images/selector.png"
-
+	"/images/miguelRight.png"
 
 ]);
 theSpriteLoader.load();
@@ -256,7 +262,7 @@ function TileContainer(xWidth,yWidth,xOffset,yOffset) {
 				if (mapValue != undefined){
 					sprite = theSpriteLoader.sprites[mapValue]
 				}else{
-					sprite = theSpriteLoader.sprites[4]
+					sprite = theSpriteLoader.sprites["selector"]
 				}
 
 				tile = new Tile(tileSize, tileSize, sprite, (x)*(tileSize+tileGap), (y)*(tileSize + tileGap));
@@ -456,7 +462,6 @@ function handleMouseDown(e) {
 }
 
 function handleMouseUp(e) {
-	console.log("up")
 	state.mouseInfo.mouseDown = false;
 	if (state.selectedPlayer !== null){
 		thePlayers[state.selectedPlayer].path = thePlayers[state.selectedPlayer].buildingPath;
@@ -488,14 +493,13 @@ joinRoom = function(){
 }
 
 sendAddSprite = function(){
-	spriteImg = "placeholder";
-	socket.emit('addSprite', spriteImg);
-	console.log("sendAddSprite")
+	var e = document.getElementById("ddlViewBy");
+	var spriteImg = e.options[e.selectedIndex].value;
+	socket.emit('addSprite', {"spriteImg":spriteImg});
 }
 
 sendRemoveSprite = function(){
 	socket.emit('removeSprite', state.selectedPlayer);
-	console.log("sendRemoveSprite")
 }
 
 function* infinite() {
@@ -511,17 +515,14 @@ const generator = infinite();
 
 
 socket.on('addSprite', function(incoming){
-	console.log("i recieved to remove new sprite")
-	player = new Player("new"+generator.next().value,10,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+	imgName = incoming.spriteImg
+	player = new Player(incoming.id,10,2,theSpriteLoader.sprites[imgName+"1"],theSpriteLoader.sprites[imgName+"Left"],theSpriteLoader.sprites[imgName+"Right"]);
 	thePlayers[player.id] = player;
 });
 
 socket.on('removeSprite', function(incoming){
-	console.log("i recieved to remove new sprite")
-	console.log(thePlayers);
 	delete thePlayers[incoming.playerId]
 	state.selectedPlayer = null;
-	console.log(thePlayers);
 });
 
 
@@ -553,7 +554,8 @@ socket.on('join', function(incoming){
 			thePlayers[key].destination[0] = incoming[key].x
 			thePlayers[key].destination[1] = incoming[key].y
 		}else{
-			player = new Player(key,10,2,theSpriteLoader.sprites[3],theSpriteLoader.sprites[4],theSpriteLoader.sprites[5]);
+			spriteImg = incoming[key].spriteImg
+			player = new Player(key,10,2,theSpriteLoader.sprites[spriteImg+"1"],theSpriteLoader.sprites[spriteImg+"Left"],theSpriteLoader.sprites[spriteImg + "Right"]);
 			thePlayers[player.id] = player;
 			thePlayers[key].x = incoming[key].x
 			thePlayers[key].y = incoming[key].y
@@ -636,12 +638,13 @@ function updateGameArea() {
 		theCamera = new TileContainer(xRes,yRes,0,0);
 
 		thePlayers = {}
+		playerNames = ["magnus","eadwynn","meera","luciana","diega","miguel"]
 		for (var i =0;i<6;i++){
-			player = new Player("p"+i,i,2,theSpriteLoader.sprites[3*(i+1)],theSpriteLoader.sprites[3*(i+1)+1],theSpriteLoader.sprites[3*(i+1)+2]);
+			player = new Player("p"+i,i,2,theSpriteLoader.sprites[playerNames[i]+"1"],theSpriteLoader.sprites[playerNames[i]+"Left"],theSpriteLoader.sprites[playerNames[i]+"Right"]);
 			thePlayers[player.id] = player;
 		}
 
-		thePlayers["jointSelector"] = new Player("jointSelector",0,0,theSpriteLoader.sprites[2],theSpriteLoader.sprites[2],theSpriteLoader.sprites[2]);
+		thePlayers["jointSelector"] = new Player("jointSelector",0,0,theSpriteLoader.sprites["selector"],theSpriteLoader.sprites["selector"],theSpriteLoader.sprites["selector"]);
 		thePlayers["jointSelector"].offset = 0;
 
 
@@ -654,7 +657,6 @@ function updateGameArea() {
 	}
 	if (setup===true && state.join === true){
 
-		console.log(state.selectedPlayer)
 		selectionChecker();
 		pathMaker();
 		

@@ -52,6 +52,17 @@ function Room(name) {
 	this.positions = {}
 }
 
+function* infinite() {
+    let index = 0;
+
+    while (true) {
+        yield index++;
+    }
+}
+
+const generator = infinite();
+
+
 
 
 
@@ -86,8 +97,14 @@ app.io.on( "connection", function( socket )
 
 	})
 
-	socket.on('addSprite', (value) => {
-		io.to(roomCode).emit('addSprite',{})
+	socket.on('addSprite', (info) => {
+		playerId = "new" + generator.next().value
+		rooms[roomCode][playerId] = {}
+		rooms[roomCode][playerId]["x"] = 10
+		rooms[roomCode][playerId]["y"] = 2
+		rooms[roomCode][playerId]["spriteImg"] = info.spriteImg
+
+		io.to(roomCode).emit('addSprite',{"spriteImg":info.spriteImg,"id":playerId})
 	})
 
 	socket.on('removeSprite', (playerId) => {
