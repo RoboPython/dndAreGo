@@ -639,10 +639,12 @@ function updateGameArea() {
 
 		thePlayers = {}
 		playerNames = ["magnus","eadwynn","meera","luciana","diega","miguel"]
+		/*
 		for (var i =0;i<6;i++){
 			player = new Player("p"+i,i,2,theSpriteLoader.sprites[playerNames[i]+"1"],theSpriteLoader.sprites[playerNames[i]+"Left"],theSpriteLoader.sprites[playerNames[i]+"Right"]);
 			thePlayers[player.id] = player;
 		}
+		*/
 
 		thePlayers["jointSelector"] = new Player("jointSelector",0,0,theSpriteLoader.sprites["selector"],theSpriteLoader.sprites["selector"],theSpriteLoader.sprites["selector"]);
 		thePlayers["jointSelector"].offset = 0;

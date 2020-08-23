@@ -77,7 +77,6 @@ app.io.on( "connection", function( socket )
 	socket.on('createRoom', () => {
 		randomCode = Math.floor(Math.random() * 1000) + 1;
 		roomCode = randomCode;
-		//rooms[roomCode] = {"id":{"x":10,"y":11}}
 		rooms[roomCode] = {}
 
 		console.log(rooms);
