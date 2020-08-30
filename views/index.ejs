@@ -119,18 +119,20 @@ var myGameArea = {
 
 function Map() {
 	this.grid = [
-				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
-				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
-				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
-				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
-				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
-				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
-				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
-				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
-				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
-				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"],
-				["waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC"],
-				["waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD"]
+				["wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK"],
+				["wallBACK","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","stoneB","stoneA","stoneB","wallBACK"],
+				["wallBACK","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","stoneA","stoneB","stoneA","wallBACK"],
+				["wallBACK","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","stoneB","stoneA","stoneB","wallBACK"],
+				["wallBACK","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","woodFloorA","woodFloorB","waterD","waterC","waterD","waterC","stoneA","stoneB","stoneA","wallBACK"],
+				["stoneA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","waterC","waterD","waterC","waterD","stoneB","stoneA","stoneB","stoneA"],
+				["stoneB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","woodFloorA","woodFloorB","waterD","waterC","waterD","waterC","stoneB","stoneA","stoneB","stoneA"],
+
+				["wallBACK","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","woodFloorA","woodFloorB","waterC","waterD","waterC","waterD","stoneB","stoneA","stoneB","wallBACK"],
+				["wallBACK","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","stoneA","stoneB","stoneA","wallBACK"],
+				["wallBACK","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","stoneB","stoneA","stoneB","wallBACK"],
+				["wallBACK","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","waterD","waterC","stoneA","stoneB","stoneA","wallBACK"],
+				["wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK","wallBACK"]
+
 				]
 
 
@@ -187,6 +189,12 @@ function SpriteLoader(listOfFiles){
 
 
 theSpriteLoader = new SpriteLoader([
+	"/images/wallBACK.png",
+	"/images/wallSIDE.png",
+	"/images/woodFloorA.png",
+	"/images/woodFloorB.png",
+	"/images/stoneA.png",
+	"/images/stoneB.png",
 	"/images/waterC.png",
 	"/images/waterD.png",
 	"/images/selector.png",
@@ -225,7 +233,7 @@ function Tile(width, height, sprite, x, y) {
 
 
 	this.draw = function(){
-        ctx = myGameArea.context;
+       ctx = myGameArea.context;
 		ctx.drawImage(this.sprite, this.x, this.y,width=this.width,height=this.height);
 	}
 
