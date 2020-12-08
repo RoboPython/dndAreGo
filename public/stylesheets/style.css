@@ -1,8 +1,16 @@
-body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+body{
+    background-color: #444444;
 }
 
-a {
-  color: #00B7FF;
+canvas {
+    background-color: #f1f1f1;
+	margin-left:120px;
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
 }
+
+html, body {margin: 0; height: 100%;}
+
+
